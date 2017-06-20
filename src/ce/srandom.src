@@ -1,13 +1,14 @@
 	.ref __next
 	.ref __setnext
-	.def _srand
+	.def _srandom
 	.assume adl=1
 
-; void srand(unsigned int seed);
+; void srandom(int32_t seed);
 
-_srand:
+_srandom:
 	pop	de
+	pop	af
 	ex	(sp),hl
+	push	af
 	push	de
-	xor	a,a
 	jp	__setnext

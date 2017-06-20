@@ -1,0 +1,67 @@
+	.def _random
+	.def __next
+	.def __setnext
+	.assume adl=1
+
+; int32_t random(void);
+
+	SEGMENT DATA
+__next:
+	dl	1
+
+	SEGMENT CODE
+_random:
+; next = (next * 48271) % 2147483647
+	ld	hl,(__next+2)
+	ld	d,h
+	ld	e,48271&0FFh
+	ld	h,e
+	mlt	de
+	ld	a,e
+	ld	d,l
+	ld	e,48271>>8
+	mlt	de
+	add	a,e
+	mlt	hl
+	ld	bc,(__next)
+	ld	d,b
+	ld	e,48271>>8
+	mlt	de
+	add.s	hl,de
+	add	a,h
+	ld	h,l
+	ld	l,0
+	ld	d,b
+	ld	e,48271&0FFh
+	ld	b,e
+	mlt	de
+	add.s	hl,de
+	adc	a,0
+	ld	d,c
+	ld	e,48271>>8
+	mlt	de
+	add	hl,de
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	ld	de,1
+	adc	a,d
+	mlt	bc
+	add	hl,bc
+	adc	a,d			; auhl = next*48271
+	ld	c,128
+__modloop:
+	add	hl,de
+	adc	a,c			; auhl += -2147483647
+	jr	c,__modloop
+	sbc	hl,de
+	sbc	a,c			; auhl -= -2147483647
+__setnext:
+	ld	(__next),hl
+	ld	(__next+3),a
+	ret
